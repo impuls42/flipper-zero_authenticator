@@ -390,6 +390,7 @@ TotpConfigFileLoadResult totp_config_file_load(PluginState* const plugin_state) 
 
             if(backup_path != NULL) {
                 if(totp_open_config_file(storage, &fff_data_file) != true) {
+                    free(backup_path);
                     break;
                 }
 
@@ -397,6 +398,7 @@ TotpConfigFileLoadResult totp_config_file_load(PluginState* const plugin_state) 
                 if(!flipper_format_file_open_existing(fff_backup_data_file, backup_path)) {
                     flipper_format_file_close(fff_backup_data_file);
                     flipper_format_free(fff_backup_data_file);
+                    free(backup_path);
                     break;
                 }
 
@@ -411,6 +413,9 @@ TotpConfigFileLoadResult totp_config_file_load(PluginState* const plugin_state) 
                         LOGGING_TAG,
                         "An error occurred during migration to version %" PRId16,
                         CONFIG_FILE_ACTUAL_VERSION);
+                    flipper_format_file_close(fff_backup_data_file);
+                    flipper_format_free(fff_backup_data_file);
+                    free(backup_path);
                     break;
                 }
 
